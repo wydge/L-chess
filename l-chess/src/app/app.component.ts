@@ -177,22 +177,82 @@ export class AppComponent {
       }
       console.log(correctMove);
       return correctMove; 
-    }/*else if(pedone.substring(0,1) === 'C'){
-      if(this.scacchiera[casellaArr[0]+1][casellaArr[1]-1] !== undefined) {
-       
-        correctMove[i][0] = casellaArr[0]+1;
-        correctMove[i][1] = casellaArr[1]-1
+    }else if(pedone.substring(0,1) === 'C'){
+      if(this.scacchiera[casellaArr[1]-2][casellaArr[0]+1] || this.scacchiera[casellaArr[1]-2][casellaArr[0]+1] === '') {
+        let a:number[]= [];
+       a[0] = casellaArr[0]+1;
+       a[1] = casellaArr[1]-2
+        correctMove[i] = {
+          move :a
+        } ;
         i++;
       }
-  
-      if(this.scacchiera[casellaArr[0]+1][casellaArr[1]+1] !== undefined) {
-        correctMove[i][0] = casellaArr[0]+1;
-        correctMove[i][1] = casellaArr[1]-1
+      if(this.scacchiera[casellaArr[1]+2][casellaArr[0]+1] || this.scacchiera[casellaArr[1]+2][casellaArr[0]+1] === '' ){
+        let a:number[]= [];
+       a[0] = casellaArr[0]+1;
+       a[1] = casellaArr[1]+2
+        correctMove[i] = {
+          move :a
+        } ;
+        i++;
+      }  
+      if(this.scacchiera[casellaArr[1]+2][casellaArr[0]-1]|| this.scacchiera[casellaArr[1]+2][casellaArr[0]-1] === '' ){
+        let a:number[]= [];
+       a[0] = casellaArr[0]-1;
+       a[1] = casellaArr[1]+2
+        correctMove[i] = {
+          move :a
+        } ;
+        i++;
+      }   
+      if(this.scacchiera[casellaArr[1]-2][casellaArr[0]-1] || this.scacchiera[casellaArr[1]-2][casellaArr[0]-1] === '' ){
+        let a:number[]= [];
+       a[0] = casellaArr[0]-1;
+       a[1] = casellaArr[1]-2
+        correctMove[i] = {
+          move :a
+        } ;
+        i++;
+      }  
+      if(this.scacchiera[casellaArr[1]-1][casellaArr[0]+2] || this.scacchiera[casellaArr[1]-1][casellaArr[0]+2] === '' ){
+        let a:number[]= [];
+       a[0] = casellaArr[0]-1;
+       a[1] = casellaArr[1]+2
+        correctMove[i] = {
+          move :a
+        } ;
+        i++;
+      }  
+      if(this.scacchiera[casellaArr[1]-1][casellaArr[0]-2] || this.scacchiera[casellaArr[1]-1][casellaArr[0]-2] === ''){
+        let a:number[]= [];
+       a[0] = casellaArr[0]-2;
+       a[1] = casellaArr[1]-1
+        correctMove[i] = {
+          move :a
+        } ;
+        i++;
+      }  
+      if( this.scacchiera[casellaArr[1]+1][casellaArr[0]+2] || this.scacchiera[casellaArr[1]+1][casellaArr[0]+2] === ''){
+        let a:number[]= [];
+       a[0] = casellaArr[0]+2;
+       a[1] = casellaArr[1]+1
+        correctMove[i] = {
+          move :a
+        } ;
+        i++;
+      }  
+      if( this.scacchiera[casellaArr[1]+1][casellaArr[0]-2] || this.scacchiera[casellaArr[1]+1][casellaArr[0]-2] === ''){
+        let a:number[]= [];
+       a[0] = casellaArr[0]-2;
+       a[1] = casellaArr[1]+1
+        correctMove[i] = {
+          move :a
+        } ;
         i++;
       }
       
       return correctMove; 
-    }*/
+    }
     return correctMove; 
   }
 
@@ -227,9 +287,7 @@ export class AppComponent {
    //   return false;
    // }
     if(pedone === 'Pr' || pedone === 'Pb' ){
-      console.log("Arrivo1?");
       if(this.isMovePedone(casellaPart,casellaArr) ){
-        console.log("Arrivo2?");
         if(pedone.substring(1,2) !== this.scacchiera[casellaArr[1]][casellaArr[0]].substring(1,2)){
           this.scacchiera[casellaArr[1]][casellaArr[0]] = this.scacchiera[casellaPart[1]][casellaPart[0]];
           this.scacchiera[casellaPart[1]][casellaPart[0]] = '';
@@ -257,7 +315,6 @@ export class AppComponent {
           }
           return true;
         }
-       
         return false;
       }else {
         return false;
