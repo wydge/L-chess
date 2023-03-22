@@ -1,0 +1,41 @@
+
+.tableScacchi {
+    position: absolute;
+    text-align: center;
+    margin-left:15%; 
+    width: 300px;
+    top: 100px;         
+    left: 100px; 
+   
+}
+.inputPezzo{
+    width: 2%;
+}
+.caselle {
+    border: solid black;
+    height:30px;
+    width: 30px;
+  }
+.coordinate {
+  border: 0px;
+  height:30px;
+  width: 30px;
+}
+.legenda{
+    position: relative;
+    left: 700px; 
+}
+
+.redChess{
+  background-color: red;
+  color: white;
+  height:40px;
+  width: 40px;
+}
+
+.blackChess{
+  background-color: black;
+  color: white;
+  height:30px;
+  width: 30px;
+}

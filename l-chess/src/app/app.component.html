@@ -1,0 +1,38 @@
+<html>
+  <div>
+    <h2>Inserire la posizione iniziale e <br>la posizione finale del <br>pezzo che vuoi spostare</h2>
+    <h2 >{{date}}</h2>
+    <p>
+      Posizione iniziale
+      <input type="text" id="inputStart" (keyup)="partenza($event)" class="inputPezzo">
+    </p>
+    <p>
+      Posizione di arrivo
+      <input type="text" id="inputArrive" (keyup)="arrivo($event)" class="inputPezzo">
+    </p>
+    <button (click)="sposta()">Sposta</button>
+  </div>
+  
+  <h1 *ngIf="flagScacco"> ATTENZIONE SEI IN SCACCO!</h1>
+  <h3> {{error}}</h3>
+  <div class="legenda">
+    <h2>Legenda</h2>
+    <p>
+      K: KING <br>
+      C: CAVALLO <br>
+      P: PEDONE <br>
+    </p>
+  </div>
+  <div class="tableScacchi">
+    <table> 
+      <tr *ngFor="let pezzoRiga of scacchiera.reverse() ; let i = index" class="caselle">
+        <td class="coordinate">{{8 - i}}</td>
+        <td *ngFor="let pezzoColonna of pezzoRiga" class="caselle">
+          <a *ngIf="pezzoColonna.substring(1.2) === 'r'"  class="redChess">{{pezzoColonna.substring(0,1)}}</a>
+          <a *ngIf="pezzoColonna.substring(1,2) === 'b'" class="blackChess">{{pezzoColonna.substring(0,1)}}</a>
+        </td>
+      </tr>
+    <td *ngFor="let char of ['','A','B','C','D','E','F','G','H']" class="coordinate">{{char}}</td>
+    </table>
+  </div>
+</html>
