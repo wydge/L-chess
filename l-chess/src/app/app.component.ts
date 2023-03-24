@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { appService } from './app.service';
+import { RulesService } from './rules/rules.service';
 type Moves = {
   move:number[];
 }
@@ -32,7 +33,7 @@ export class AppComponent {
     'G':6,
     'H':7
   }
-  constructor(private appService: appService) {
+  constructor(private appService: appService, private rulesService:RulesService) {
     
     this.appService.getConfig()
       .subscribe({
@@ -59,9 +60,9 @@ export class AppComponent {
   }
 
   public getData(data:any) {
-    console.log("DATA?",data);
     this.date =  data.results.sunrise;
   }
+
   public sposta() {
     if(this.isPosizioneCorretta(this.posizionePartenza) && this.isPosizioneCorretta(this.posizioneArrivo)){
 
@@ -70,28 +71,25 @@ export class AppComponent {
 
         var casellaArrivo: number[] = [this.charToNumber[this.posizioneArrivo[0]],Number(this.posizioneArrivo[1])-1];
         if(this.scacchiera[casellaPartenza[1]][casellaPartenza[0]] !== ''){
-
-          if(this.muoviPezzo(this.scacchiera[casellaPartenza[1]][casellaPartenza[0]],casellaArrivo,casellaPartenza)){
+          let errorMove = this.muoviPezzo(this.scacchiera[casellaPartenza[1]][casellaPartenza[0]],casellaArrivo,casellaPartenza);
+          if(errorMove === ""){
             //this.turno === "r" ? this.turno = "b" : this.turno = "r";
-            if(this.flagScacco === true){
-              this.error = "SEI SOTTO SCACCO!";
-            }else{
               this.error = "";
-            }
+            
             
             (<HTMLInputElement>document.getElementById("inputStart")).value = "";
             (<HTMLInputElement>document.getElementById("inputArrive")).value = "";
           }else{
-            this.error = "Il pezzo selezionato non può muoversi in questo modo, riprovare";
+            this.error = errorMove;
           }
         }else{
           this.error = "non puoi muovere una casella vuota <br> riprovare";
         }
       }else{
-        this.error = "Non puoi muovere nella<br> stessa casella il pezzo";
+        this.error = "Non puoi muovere nella</br> stessa casella il pezzo";
       }
     }else{
-      this.error = "Inserire una posizione<br> esistente nella scacchiera";
+      this.error = "Inserire una posizione</br> esistente nella scacchiera";
     }
     
   }
@@ -118,44 +116,13 @@ export class AppComponent {
     }
   }
 
-  public isMoveCavallo(casellaPart:number[], casellaArr:number[]) : boolean{
-    if((casellaArr[0] === casellaPart[0]+1 || casellaArr[0]=== casellaPart[0]-1) && (casellaArr[1] === casellaPart[1]+2 || casellaArr[1] === casellaPart[1]-2 ) ){
-      return true;
-    }else if((casellaArr[0] === casellaPart[0]+2 || casellaArr[0]=== casellaPart[0]-2) && (casellaArr[1] === casellaPart[1]+1 || casellaArr[1] === casellaPart[1]-1 ) ){
-      return true;
-    }
-    return false;
-  }
-  public isMovePedone(casellaPart:number[], casellaArr:number[]):boolean{
-    if(this.turno === "b"){
-      if(casellaArr[0] === casellaPart[0] && casellaArr[1] === casellaPart[1] +1 ){
-        return true;
-      }
-      return false;
-    }else if(this.turno === "r"){
-      if(casellaArr[0] === casellaPart[0] && casellaArr[1] === casellaPart[1] -1 ){
-        return true;
-      }
-      return false;
-    }
-    return false;
-    
-  }
-  public isMoveKing(casellaPart:number[], casellaArr:number[]):boolean{
-    if(((casellaArr[0] === casellaPart[0]+1  ||casellaArr[0] === casellaPart[0]-1 ) &&
-   (casellaArr[1] === casellaPart[1]+1  ||casellaArr[1] === casellaPart[1]-1 )) || ((casellaArr[0] === casellaPart[0]) && (casellaArr[1] === casellaPart[1]+1 || casellaArr[1]=== casellaPart[1]-1))
-    || ((casellaArr[0] === casellaPart[0]+1 || casellaArr[0] === casellaPart[0]-1) && (casellaArr[1] === casellaPart[1]))){
-      return true;
-    }
-    return false;
-  }
   public allMoves(pedone:string, casellaArr:number[]) : Moves[]{
   
     var i =0;
     var correctMove :Moves[]=[];
+    //MOVIMENTI DEL PEDONE
     if(pedone.substring(0,1) === 'P'){
       if(this.scacchiera[casellaArr[1]+1][casellaArr[0]-1] || this.scacchiera[casellaArr[1]+1][casellaArr[0]-1] === '') {
-        console.log("ARRIVO QUI1?",casellaArr[0]+1);
        let a:number[]= [];
        a[0] = casellaArr[0]-1;
        a[1] = casellaArr[1]+1
@@ -166,7 +133,6 @@ export class AppComponent {
       }
   
       if(this.scacchiera[casellaArr[1]+1][casellaArr[0]+1] || this.scacchiera[casellaArr[1]+1][casellaArr[0]+1] === '') {
-        console.log("ARRIVO QUI2?");
         let a:number[]= [];
        a[0] = casellaArr[0]+1;
        a[1] = casellaArr[1]+1
@@ -175,8 +141,8 @@ export class AppComponent {
         } ;
         i++;
       }
-      console.log(correctMove);
       return correctMove; 
+      //MOVIMENTI DEL CAVALLO
     }else if(pedone.substring(0,1) === 'C'){
       if(this.scacchiera[casellaArr[1]-2][casellaArr[0]+1] || this.scacchiera[casellaArr[1]-2][casellaArr[0]+1] === '') {
         let a:number[]= [];
@@ -255,84 +221,58 @@ export class AppComponent {
     }
     return correctMove; 
   }
+  //this.allMoves(pedone,casellaArr);
+  
 
-  public isScacco(pedone:string, casellaArr:number[]):boolean{
-    let possibleMoves:Moves[] = this.allMoves(pedone,casellaArr);
-    let scacco = false
-      
-    if(pedone.substring(1,2) === 'r'){
-      possibleMoves.forEach((pedina) => {
-        console.log("scacchiera1",this.scacchiera[pedina.move[1]][pedina.move[0]]);
-        if(this.scacchiera[pedina.move[1]][pedina.move[0]] === 'Kb'){
-          scacco = true;
-
-        }
-      })
-      return scacco;
-    }else{
-      possibleMoves.forEach((pedina) => {
-        if(this.scacchiera[pedina.move[1]][pedina.move[0]] === 'Kr'){
-          console.log("scacchiera1",this.scacchiera[pedina.move[1]][pedina.move[0]]);
-          scacco = true;
-        }
-      })
-      return scacco;
-    }
-    
-    
-  }
-
-  public muoviPezzo(pedone:string,casellaArr:number[],casellaPart:number[]): boolean{
-    //if(pedone.substring(1,2) !== this.turno){
-   //   return false;
-   // }
+  public muoviPezzo(pedone:string,casellaArr:number[],casellaPart:number[]): string{
+      if(pedone.substring(1,2) !== this.turno){
+        return "Stai muovendo un pezzo dell'avversario";
+      }
     if(pedone === 'Pr' || pedone === 'Pb' ){
-      if(this.isMovePedone(casellaPart,casellaArr) ){
+      if(this.rulesService.isMovePedone(casellaPart,casellaArr,this.turno) ){
         if(pedone.substring(1,2) !== this.scacchiera[casellaArr[1]][casellaArr[0]].substring(1,2)){
           this.scacchiera[casellaArr[1]][casellaArr[0]] = this.scacchiera[casellaPart[1]][casellaPart[0]];
           this.scacchiera[casellaPart[1]][casellaPart[0]] = '';
-          if(this.isScacco(pedone,casellaArr)){
+          if(this.rulesService.isScacco(pedone,casellaArr,this.scacchiera,this.allMoves(pedone,casellaArr))){
             this.flagScacco=true;
           }else{
             this.flagScacco=false;
           }
-          return true;
+          return "";
         }
-        return false;
+        return "Non puoi attaccare una tua pedina!";
         
       }else {
-        return false;
+        return "Il pedone non può muoversi così!";
       }
     }else if(pedone === 'Cr' || pedone === 'Cb'){
-      if(this.isMoveCavallo(casellaPart, casellaArr)){
+      if(this.rulesService.isMoveCavallo(casellaPart, casellaArr,this.turno)){
         if(pedone.substring(1,2) !== this.scacchiera[casellaArr[1]][casellaArr[0]].substring(1,2)){
           this.scacchiera[casellaArr[1]][casellaArr[0]] = this.scacchiera[casellaPart[1]][casellaPart[0]];
           this.scacchiera[casellaPart[1]][casellaPart[0]] = '';
-          if(this.isScacco(pedone,casellaArr)){
+          if(this.rulesService.isScacco(pedone,casellaArr,this.scacchiera,this.allMoves(pedone,casellaArr))){
             this.flagScacco=true;
           }else{
             this.flagScacco=false;
           }
-          return true;
+          return "";
         }
-        return false;
+        return "Non puoi attaccare una tua pedina!";
       }else {
-        return false;
+        return "Il cavallo non può muoversi così!";
       }
     }else if(pedone === 'Kr' || pedone === 'Kb'){
-      if(this.isMoveKing(casellaPart, casellaArr)){
+      if(this.rulesService.isMoveKing(casellaPart, casellaArr, this.turno)){
         if(pedone.substring(1,2) !== this.scacchiera[casellaArr[1]][casellaArr[0]].substring(1,2)){
           this.scacchiera[casellaArr[1]][casellaArr[0]] = this.scacchiera[casellaPart[1]][casellaPart[0]];
           this.scacchiera[casellaPart[1]][casellaPart[0]] = '';
-          return true;
+          return "";
         }
-        return false;
+        return "Non puoi attaccare una tua pedina!";
       }
-      return false;
-    }else{
-      return false;
+      return "Il re non può muoversi così!";
     }
-    
+    return "";
   }
   
 }

@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { appService } from './app.service';
+import { RulesService } from './rules/rules.service';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { appService } from './app.service';
     HttpClientModule
   ],
   providers: [
-    appService
+    appService,
+    RulesService
   ],
   bootstrap: [AppComponent]
 })
