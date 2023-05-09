@@ -1,7 +1,11 @@
 <html>
   <div>
     <h2>Inserire la posizione iniziale e <br>la posizione finale del <br>pezzo che vuoi spostare</h2>
-    <h2 >{{date}}</h2>
+    <h2 >It's your turn  
+      <a *ngIf="turno === 'b'"> Black </a>
+      <a *ngIf="turno === 'r'" style="color: red;"> Red </a>
+    </h2>
+    
     <p>
       Posizione iniziale
       <input type="text" id="inputStart" (keyup)="partenza($event)" class="inputPezzo">
@@ -13,7 +17,7 @@
     <button (click)="sposta()">Sposta</button>
   </div>
   
-  <h1 *ngIf="flagScacco"> ATTENZIONE SEI IN SCACCO!</h1>
+  <h1 *ngIf="scacco.isCheck"> ATTENZIONE SEI IN SCACCO!</h1>
   <h3> {{error}}</h3>
   <div class="legenda">
     <h2>Legenda</h2>

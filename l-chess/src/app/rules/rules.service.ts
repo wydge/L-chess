@@ -5,6 +5,9 @@ type Moves = {
 @Injectable({
   providedIn: 'root'
 })
+/*
+Service contenente le regole di ogni pezzo della scacchiera
+*/ 
 export class RulesService {
 
   constructor() { }

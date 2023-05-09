@@ -4,6 +4,19 @@ import { RulesService } from './rules/rules.service';
 type Moves = {
   move:number[];
 }
+type Check = {
+  isCheck: boolean;
+  player: string;
+  allPositionCheck: Moves[];
+}
+type Player = {
+  pedoni: Moves[];
+  cavalli: Moves[];
+  re: number[];
+  alfieri: Moves[];
+  torri: Moves[]
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -18,8 +31,36 @@ export class AppComponent {
   scacchiera: string[][];
   posizionePartenza: any;
   posizioneArrivo: any;
-  flagWin: boolean=false;
-  flagScacco: boolean=false;
+  flagWinB: boolean=false;
+  iPedoniB: number = 0;
+  iCavalliB: number = 0;
+  iAlfieriB: number = 0;
+  iTorriB: number = 0;
+  iPedoniW: number = 0;
+  iCavalliW: number = 0;
+  iAlfieriW: number = 0;
+  iTorriW: number = 0;
+  scacco: Check={
+    isCheck: false,
+    player: '',
+    allPositionCheck: []
+  };
+  black: Player= {
+    pedoni: [],
+    cavalli: [],
+    re: [],
+    alfieri: [],
+    torri: []
+  };
+
+  white: Player= {
+    pedoni: [],
+    cavalli: [],
+    re: [],
+    alfieri: [],
+    torri: []
+  }
+  
   turno: string="b" ;
   date: string="";
   timeZoneObject: any;
@@ -57,6 +98,43 @@ export class AppComponent {
       ['','Cr','','Kr','','','Cr','']
     ];
 
+    var i,j;
+    
+    for(i=0, i<8 ; i++;){
+      for(j=0; j<8; j++){
+        if(this.scacchiera[i][j] === 'Pb'){
+          this.black.pedoni[this.iPedoniB].move[0] = i;
+          this.black.pedoni[this.iPedoniB].move[1] = j;
+          this.iPedoniB++;
+        }
+        if(this.scacchiera[i][j] === 'Pr'){
+          this.white.pedoni[this.iPedoniW].move[0] = i;
+          this.white.pedoni[this.iPedoniW].move[1] = j;
+          this.iPedoniW++;
+        }
+        if(this.scacchiera[i][j] === 'Cb'){
+          this.black.cavalli[this.iCavalliB].move[0] = i;
+          this.black.cavalli[this.iCavalliB].move[1] = j;
+          this.iCavalliB++;
+        }
+        if(this.scacchiera[i][j] === 'Cr'){
+          this.white.cavalli[this.iCavalliW].move[0] = i;
+          this.white.cavalli[this.iCavalliW].move[1] = j;
+          this.iCavalliW++;
+        }
+        if(this.scacchiera[i][j] === 'Kb'){
+          this.black.re[0]= i;
+          this.black.re[1] = j;
+ 
+        }
+        if(this.scacchiera[i][j] === 'Kr'){
+          this.white.re[0] = i;
+          this.white.re[1] = j;
+
+        }
+
+      }
+    }
   }
 
   public getData(data:any) {
@@ -73,10 +151,9 @@ export class AppComponent {
         if(this.scacchiera[casellaPartenza[1]][casellaPartenza[0]] !== ''){
           let errorMove = this.muoviPezzo(this.scacchiera[casellaPartenza[1]][casellaPartenza[0]],casellaArrivo,casellaPartenza);
           if(errorMove === ""){
-            //this.turno === "r" ? this.turno = "b" : this.turno = "r";
+              this.turno === "r" ? this.turno = "b" : this.turno = "r";
+              this.scacco.isCheck=== true ? this.scacco.player = this.turno: null;
               this.error = "";
-            
-            
             (<HTMLInputElement>document.getElementById("inputStart")).value = "";
             (<HTMLInputElement>document.getElementById("inputArrive")).value = "";
           }else{
@@ -225,18 +302,21 @@ export class AppComponent {
   
 
   public muoviPezzo(pedone:string,casellaArr:number[],casellaPart:number[]): string{
-      if(pedone.substring(1,2) !== this.turno){
-        return "Stai muovendo un pezzo dell'avversario";
-      }
+    if(pedone.substring(1,2) !== this.turno){
+      return "Stai muovendo un pezzo dell'avversario";
+    }
     if(pedone === 'Pr' || pedone === 'Pb' ){
       if(this.rulesService.isMovePedone(casellaPart,casellaArr,this.turno) ){
         if(pedone.substring(1,2) !== this.scacchiera[casellaArr[1]][casellaArr[0]].substring(1,2)){
           this.scacchiera[casellaArr[1]][casellaArr[0]] = this.scacchiera[casellaPart[1]][casellaPart[0]];
           this.scacchiera[casellaPart[1]][casellaPart[0]] = '';
           if(this.rulesService.isScacco(pedone,casellaArr,this.scacchiera,this.allMoves(pedone,casellaArr))){
-            this.flagScacco=true;
+            this.scacco.isCheck=true;
+            this.scacco.player= this.turno === 'r'? 'b' : 'r';
+            //this.scacco.allPositionCheck = 
+            
           }else{
-            this.flagScacco=false;
+            this.scacco.isCheck=false;
           }
           return "";
         }
@@ -251,9 +331,10 @@ export class AppComponent {
           this.scacchiera[casellaArr[1]][casellaArr[0]] = this.scacchiera[casellaPart[1]][casellaPart[0]];
           this.scacchiera[casellaPart[1]][casellaPart[0]] = '';
           if(this.rulesService.isScacco(pedone,casellaArr,this.scacchiera,this.allMoves(pedone,casellaArr))){
-            this.flagScacco=true;
+            this.scacco.isCheck=true;
+            this.scacco.player= this.turno === 'r'? 'b' : 'r';
           }else{
-            this.flagScacco=false;
+            this.scacco.isCheck=false;
           }
           return "";
         }
